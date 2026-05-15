@@ -80,6 +80,7 @@ npm run dev
 Open `http://localhost:5173` to see the live dashboard!
 
 ## Deployment Links
-- [Demo Video](#) (Coming Soon)
-- [Deployed Frontend](#) (Vercel Placeholder)
-- [Deployed Backend](#) (Render Placeholder)
+- [🚀 Live Dashboard](https://degradation-detective.vercel.app) — deployed on Vercel
+- [📦 Source Code](https://github.com/akshat-dubey-03/Degradation-Detective) — GitHub Repository
+- [🎬 Demo Video](#) (Coming Soon)
+- Backend: deployable via Render (local for now — see Backend Commands above)
