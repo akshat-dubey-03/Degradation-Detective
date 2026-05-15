@@ -1,0 +1,326 @@
+DEGRADATION DETECTIVE - DAILY TASK TRACKER
+
+Deadline: June 15, 2026
+Daily capacity: 2 hours/day
+Current status: Day 4 of 34 completed
+Next task: Day 5 - API for data
+
+How to use this file:
+- Change [ ] to [x] when a task is completed.
+- Update "Current status" daily.
+- Commit every day after finishing that day's work.
+
+
+WEEK 1 - FAKE WORLD & DATA LAYER
+Goal: Fake APIs, watcher, and database storing every ping.
+
+Day 1 - May 13 - Fake APIs Alive
+[x] Create folder degradation-detective/backend/
+[x] Create Python virtual environment
+[x] Install fastapi, uvicorn, requests, sqlalchemy, pydantic
+[x] Create backend/fake_services.py
+[x] Add /login endpoint
+[x] Add /payment endpoint
+[x] Add /search endpoint
+[x] Add /admin/chaos endpoint
+[x] Add /admin/chaos/reset endpoint
+[x] Add /admin/status endpoint
+[x] Test healthy fake APIs
+[x] Test slow chaos mode
+[x] Create .gitignore
+[x] Git commit: day-1-fake-apis-alive
+
+Day 2 - May 14 - Watcher Seeing
+[x] Create backend/watcher.py
+[x] Poll login, payment, and search every 2 seconds
+[x] Measure exact latency using time.perf_counter()
+[x] Record timestamp, service_name, endpoint, status_code, latency_ms, is_error
+[x] Print clean terminal table
+[x] Run watcher alongside fake_services
+[x] Trigger chaos and confirm watcher shows slowdown
+[x] Git commit: day-2-watcher-seeing
+
+Day 3 - May 15 - Database Born
+[x] Create backend/database.py using sqlite3
+[x] Create metrics table
+[x] Create alerts table
+[x] Add resolved_at column to alerts if useful now
+[x] Write init_db() function
+[x] Write save_metric(metric_dict) function
+[x] Run init_db()
+[x] Verify metrics.db file appears
+[x] Git commit: day-3-database-born
+
+Day 4 - May 16 - Metrics Persisting
+[x] Connect watcher.py to database.py
+[x] Save every ping to SQLite
+[x] Write get_recent_metrics(service_name, minutes)
+[x] Write get_average_latency(service_name, minutes)
+[x] Write get_error_rate(service_name, minutes)
+[x] Let watcher run for 3 minutes
+[x] Query averages from a separate script or Python shell
+[x] Git commit: day-4-metrics-persisting
+
+Day 5 - May 17 - API For Data
+[ ] Add GET /metrics/history?service=login&minutes=10
+[ ] Return historical metrics as JSON
+[ ] Add GET /metrics/summary
+[ ] Return current status for all 3 services
+[ ] Test endpoints in FastAPI docs
+[ ] Git commit: day-5-api-for-data
+
+Day 6 - May 18 - Structure Solid
+[ ] End-to-end test: Watcher -> DB -> History API
+[ ] Create backend/models.py
+[ ] Define Pydantic models for Metric, Alert, ChaosConfig
+[ ] Move existing Pydantic classes into models.py
+[ ] Start README.md
+[ ] Write Architecture section
+[ ] Git commit: day-6-structure-solid
+
+Day 7 - May 19 - Week 1 Buffer
+[ ] Fix bugs from Days 1-6
+[ ] Ensure fake_services.py can run alone
+[ ] Ensure watcher.py can run alone
+[ ] Ensure both can run together
+[ ] Add docstrings to 3 important functions
+[ ] Verify chaos -> watcher -> DB -> history API flow
+[ ] Git commit: day-7-week-1-done
+
+
+WEEK 2 - THE BRAIN: ANOMALY DETECTION
+Goal: The system automatically knows when something is wrong.
+
+Day 8 - May 20 - Baseline Math
+[ ] Create backend/detector.py
+[ ] Add calculate_baseline(service_name, window_minutes=10)
+[ ] Add get_current_status(service_name)
+[ ] Print baselines for all 3 services
+[ ] Git commit: day-8-baseline-math
+
+Day 9 - May 21 - Thresholds Working
+[ ] Add check_latency_anomaly(service)
+[ ] Add check_error_anomaly(service)
+[ ] Add detect_all()
+[ ] Integrate detector into watcher terminal output
+[ ] Test chaos detection within 4-6 seconds
+[ ] Git commit: day-9-thresholds-working
+
+Day 10 - May 22 - Correlation
+[ ] Add check_cascade_failure()
+[ ] Add classify_scope(anomalies)
+[ ] Add correlation_score to anomaly dict
+[ ] Test breaking 2 services together
+[ ] Git commit: day-10-correlation
+
+Day 11 - May 23 - Alert Lifecycle
+[ ] Create Alert Pydantic model
+[ ] Add create_alert(anomaly_dict)
+[ ] Add get_active_alerts()
+[ ] Add resolve_alert(service_name)
+[ ] Add resolved_at timestamp column
+[ ] Test break -> alert created, fix -> alert resolved
+[ ] Git commit: day-11-alert-lifecycle
+
+Day 12 - May 24 - Severity Patterns
+[ ] Add severity logic
+[ ] Add degrading pattern detection
+[ ] Add GET /alerts/active
+[ ] Add GET /alerts/history?limit=50
+[ ] Test healthy, slow, errors, both
+[ ] Git commit: day-12-severity-patterns
+
+Day 13 - May 25 - Auto Alerts Live
+[ ] Fully integrate detector into watcher.py
+[ ] Add alert deduplication
+[ ] Add 30-second cooldown
+[ ] Print active alert summary every poll cycle
+[ ] Git commit: day-13-auto-alerts-live
+
+Day 14 - May 26 - Week 2 Buffer
+[ ] Tune thresholds
+[ ] Handle connection refused / timeout
+[ ] Refactor detector.py if needed
+[ ] Update README with Week 2 architecture
+[ ] Git commit: day-14-week-2-done
+
+
+WEEK 3 - THE AI NARRATOR
+Goal: The system explains incidents like an SRE.
+
+Day 15 - May 27 - LLM Connected
+[ ] Create backend/narrator.py
+[ ] Add call_openrouter(prompt)
+[ ] Use OpenRouter chat completions API
+[ ] Test basic SRE hello prompt
+[ ] Handle timeout, rate limit, bad key
+[ ] Git commit: day-15-llm-connected
+
+Day 16 - May 28 - Prompt V1
+[ ] Create backend/prompts.py or prompts folder
+[ ] Add build_narration_prompt(metrics_list, alert_list)
+[ ] Test with fake data
+[ ] Iterate prompt 3 times
+[ ] Git commit: day-16-prompt-v1
+
+Day 17 - May 29 - SRE Voice
+[ ] Rewrite prompt for casual thinking-out-loud voice
+[ ] Add exact-number constraints
+[ ] Test latency spike scenario
+[ ] Test error burst scenario
+[ ] Test cascade failure scenario
+[ ] Save final prompt as prompts/sre_v1.txt
+[ ] Git commit: day-17-sre-voice
+
+Day 18 - May 30 - Structured Output
+[ ] Require JSON-only output
+[ ] Add parse_llm_json(response_text)
+[ ] Add NarrationResult Pydantic model
+[ ] Test 5 scenarios
+[ ] Add fallback JSON if LLM fails
+[ ] Git commit: day-18-structured-output
+
+Day 19 - May 31 - Narrator Loop
+[ ] Create narrations table
+[ ] Add narrator loop
+[ ] Find unresolved alerts without narrations
+[ ] Send alert and recent metrics to LLM
+[ ] Save narration to DB
+[ ] Mark alert as narrated
+[ ] Git commit: day-19-narrator-loop
+
+Day 20 - June 1 - Voice Added
+[ ] Add optional voice/text-to-speech layer
+[ ] Prefer browser speechSynthesis later, or pyttsx3 now
+[ ] Test narration spoken aloud if using TTS
+[ ] Skip if TTS takes too long
+[ ] Git commit: day-20-voice-added
+
+Day 21 - June 2 - Week 3 Buffer
+[ ] Add GET /narrations/recent?limit=20
+[ ] Add fallback narration templates
+[ ] Refactor narrator functions
+[ ] Full pipeline test: Chaos -> Detection -> Alert -> Narration -> DB -> API
+[ ] Git commit: day-21-week-3-done
+
+
+WEEK 4 - THE DASHBOARD
+Goal: A visual interface for the live demo.
+
+Day 22 - June 3 - UI Scaffold
+[ ] Create frontend folder
+[ ] Initialize React/Vite or plain HTML fallback
+[ ] Install Chart.js dependencies
+[ ] Create Header, ServiceCards, NarrationPanel, ChaosPanel
+[ ] Hardcode fake data first
+[ ] Git commit: day-22-ui-scaffold
+
+Day 23 - June 4 - Live Cards
+[ ] Connect frontend to /metrics/summary
+[ ] Add CORS middleware to backend
+[ ] Display latency, status code, uptime
+[ ] Auto-refresh every 3 seconds
+[ ] Add green/yellow/red color logic
+[ ] Git commit: day-23-live-cards
+
+Day 24 - June 5 - Live Chart
+[ ] Add Chart.js latency graph
+[ ] Fetch /metrics/history
+[ ] Show login, payment, search datasets
+[ ] Auto-update every 5 seconds
+[ ] Git commit: day-24-live-chart
+
+Day 25 - June 6 - Narration Feed
+[ ] Build NarrationPanel
+[ ] Fetch /narrations/recent every 5 seconds
+[ ] Show timestamp and narration text
+[ ] Auto-scroll to bottom
+[ ] Git commit: day-25-narration-feed
+
+Day 26 - June 7 - Chaos Buttons
+[ ] Build ChaosPanel
+[ ] Add Slow Login button
+[ ] Add Break Payment button
+[ ] Add Overload Search button
+[ ] Add Fix All button
+[ ] Add Random Chaos button
+[ ] Show current chaos state
+[ ] Git commit: day-26-chaos-buttons
+
+Day 27 - June 8 - Dashboard Integrated
+[ ] Full frontend integration test
+[ ] Add loading states
+[ ] Add Backend Offline banner
+[ ] Add title, name, GitHub repo link
+[ ] Polish laptop-screen layout
+[ ] Git commit: day-27-dashboard-integrated
+
+Day 28 - June 9 - Week 4 Buffer
+[ ] Fix CORS issues
+[ ] Fix fetch timing
+[ ] Add subtle animations
+[ ] Ensure chart does not flicker
+[ ] Git commit: day-28-week-4-done
+
+
+WEEK 5 - DEPLOYMENT & INTERVIEW ARMOR
+Goal: Live URL, demo video, and interview answers.
+
+Day 29 - June 10 - Backend Deployed
+[ ] Freeze backend requirements
+[ ] Deploy backend to Render or Railway
+[ ] Verify deployed /docs URL
+[ ] Update frontend API URL
+[ ] Git commit: day-29-backend-deployed
+
+Day 30 - June 11 - Frontend Deployed
+[ ] Build frontend
+[ ] Deploy to Vercel or Netlify
+[ ] Verify dashboard loads
+[ ] Test deployed chaos flow
+[ ] Git commit: day-30-frontend-deployed
+
+Day 31 - June 12 - README Gold
+[ ] Write README title and one-liner
+[ ] Add dashboard screenshot
+[ ] Add architecture diagram
+[ ] Add tech stack
+[ ] Add local setup instructions
+[ ] Add deployed links section
+[ ] Git commit: day-31-readme-gold
+
+Day 32 - June 13 - Demo Video
+[ ] Record 2-minute demo video
+[ ] Show healthy dashboard
+[ ] Break login service
+[ ] Show graph spike, alert, and AI narration
+[ ] Add video link to README
+[ ] Git commit: day-32-demo-video
+
+Day 33 - June 14 - Interview Ready
+[ ] Create NOTES.md
+[ ] Write "Why this project?" answer
+[ ] Write anomaly detection explanation
+[ ] Write "Why not Datadog?" answer
+[ ] Write scale answer
+[ ] Write hardest part answer
+[ ] Rehearse demo 3 times
+[ ] Git commit: day-33-interview-ready
+
+Day 34 - June 15 - Ship It V1.0
+[ ] Full deployed end-to-end test
+[ ] Fix last bugs
+[ ] Update LinkedIn featured section
+[ ] Add project to resume
+[ ] Take final screenshot
+[ ] Git commit: day-34-ship-it-v1.0
+
+
+PROGRESS TRACKER
+Week 1 - Fake World & Database: In Progress
+Week 2 - Anomaly Detection Brain: Not Started
+Week 3 - AI Narrator: Not Started
+Week 4 - Dashboard: Not Started
+Week 5 - Deploy & Interview Prep: Not Started
+
+Days completed: 4 / 34
