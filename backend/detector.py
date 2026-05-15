@@ -1,0 +1,195 @@
+from datetime import datetime
+from typing import Any, Dict, List
+
+try:
+    from backend.database import (
+        SERVICE_NAMES,
+        get_average_latency,
+        get_error_rate,
+        get_latest_metric,
+        get_metric_count,
+    )
+except ImportError:
+    from database import (
+        SERVICE_NAMES,
+        get_average_latency,
+        get_error_rate,
+        get_latest_metric,
+        get_metric_count,
+    )
+
+
+BASELINE_WINDOW_MINUTES = 10
+LATENCY_MULTIPLIER = 2.0
+LATENCY_ABSOLUTE_MS = 1000
+ERROR_RATE_THRESHOLD_PERCENT = 50
+
+
+def calculate_baseline(
+    service_name: str,
+    window_minutes: int = BASELINE_WINDOW_MINUTES,
+) -> Dict[str, Any]:
+    """Return recent baseline stats for one service."""
+    return {
+        "service_name": service_name,
+        "window_minutes": window_minutes,
+        "average_latency_ms": round(
+            get_average_latency(service_name, window_minutes),
+            2,
+        ),
+        "error_rate_percent": round(get_error_rate(service_name, window_minutes), 2),
+        "sample_count": get_metric_count(service_name, window_minutes),
+    }
+
+
+def get_current_status(service_name: str) -> Dict[str, Any]:
+    latest_metric = get_latest_metric(service_name)
+    baseline = calculate_baseline(service_name)
+
+    status = "unknown"
+    if latest_metric is not None:
+        status = "degraded" if latest_metric["is_error"] else "healthy"
+
+    return {
+        "service_name": service_name,
+        "status": status,
+        "latest_metric": latest_metric,
+        "baseline": baseline,
+    }
+
+
+def check_latency_anomaly(service_name: str) -> Dict[str, Any]:
+    latest_metric = get_latest_metric(service_name)
+    baseline = calculate_baseline(service_name)
+
+    if latest_metric is None:
+        return {}
+
+    current_latency = float(latest_metric["latency_ms"])
+    baseline_latency = float(baseline["average_latency_ms"])
+    dynamic_threshold = baseline_latency * LATENCY_MULTIPLIER
+    threshold = max(dynamic_threshold, LATENCY_ABSOLUTE_MS)
+
+    if current_latency < threshold:
+        return {}
+
+    severity = "critical" if current_latency >= threshold * 1.5 else "warning"
+    return {
+        "service_name": service_name,
+        "anomaly_type": "latency",
+        "severity": severity,
+        "message": (
+            f"{service_name} latency is {int(current_latency)}ms, "
+            f"above the {int(threshold)}ms anomaly threshold"
+        ),
+        "current_value": current_latency,
+        "baseline_value": baseline_latency,
+        "timestamp": datetime.now().isoformat(timespec="seconds"),
+        "correlation_score": 0.0,
+    }
+
+
+def check_error_anomaly(service_name: str) -> Dict[str, Any]:
+    latest_metric = get_latest_metric(service_name)
+    baseline = calculate_baseline(service_name)
+
+    if latest_metric is None:
+        return {}
+
+    current_error_rate = float(baseline["error_rate_percent"])
+    latest_is_error = bool(latest_metric["is_error"])
+
+    if not latest_is_error and current_error_rate < ERROR_RATE_THRESHOLD_PERCENT:
+        return {}
+
+    severity = "critical" if current_error_rate >= ERROR_RATE_THRESHOLD_PERCENT else "warning"
+    return {
+        "service_name": service_name,
+        "anomaly_type": "errors",
+        "severity": severity,
+        "message": (
+            f"{service_name} is returning errors "
+            f"({round(current_error_rate, 2)}% in the recent window)"
+        ),
+        "current_value": current_error_rate,
+        "baseline_value": 0.0,
+        "timestamp": datetime.now().isoformat(timespec="seconds"),
+        "correlation_score": 0.0,
+    }
+
+
+def check_cascade_failure(anomalies: List[Dict[str, Any]]) -> Dict[str, Any]:
+    affected_services = sorted(
+        {anomaly["service_name"] for anomaly in anomalies if anomaly}
+    )
+
+    if len(affected_services) < 2:
+        return {
+            "is_cascade": False,
+            "affected_services": affected_services,
+            "correlation_score": 0.0,
+        }
+
+    correlation_score = min(1.0, len(affected_services) / len(SERVICE_NAMES))
+    return {
+        "is_cascade": True,
+        "affected_services": affected_services,
+        "correlation_score": round(correlation_score, 2),
+        "message": (
+            "Multiple services are degraded together: "
+            + ", ".join(affected_services)
+        ),
+    }
+
+
+def classify_scope(anomalies: List[Dict[str, Any]]) -> Dict[str, Any]:
+    cascade = check_cascade_failure(anomalies)
+
+    if not anomalies:
+        return {
+            "scope": "healthy",
+            "correlation_score": 0.0,
+            "affected_services": [],
+        }
+
+    if cascade["is_cascade"]:
+        scope = "cascade"
+        correlation_score = cascade["correlation_score"]
+    else:
+        scope = "single_service"
+        correlation_score = 0.33
+
+    for anomaly in anomalies:
+        anomaly["correlation_score"] = correlation_score
+
+    return {
+        "scope": scope,
+        "correlation_score": correlation_score,
+        "affected_services": cascade["affected_services"],
+    }
+
+
+def detect_all() -> Dict[str, Any]:
+    anomalies: List[Dict[str, Any]] = []
+
+    for service_name in SERVICE_NAMES:
+        latency_anomaly = check_latency_anomaly(service_name)
+        if latency_anomaly:
+            anomalies.append(latency_anomaly)
+
+        error_anomaly = check_error_anomaly(service_name)
+        if error_anomaly:
+            anomalies.append(error_anomaly)
+
+    scope = classify_scope(anomalies)
+    return {
+        "timestamp": datetime.now().isoformat(timespec="seconds"),
+        "scope": scope,
+        "anomalies": anomalies,
+    }
+
+
+if __name__ == "__main__":
+    for service in SERVICE_NAMES:
+        print(calculate_baseline(service))
+    print(detect_all())

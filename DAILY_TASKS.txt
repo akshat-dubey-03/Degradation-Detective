@@ -2,8 +2,8 @@ DEGRADATION DETECTIVE - DAILY TASK TRACKER
 
 Deadline: June 15, 2026
 Daily capacity: 2 hours/day
-Current status: Day 4 of 34 completed
-Next task: Day 5 - API for data
+Current status: Day 10 of 34 completed
+Next task: Day 11 - Alert Lifecycle
 
 How to use this file:
 - Change [ ] to [x] when a task is completed.
@@ -62,56 +62,56 @@ Day 4 - May 16 - Metrics Persisting
 [x] Git commit: day-4-metrics-persisting
 
 Day 5 - May 17 - API For Data
-[ ] Add GET /metrics/history?service=login&minutes=10
-[ ] Return historical metrics as JSON
-[ ] Add GET /metrics/summary
-[ ] Return current status for all 3 services
-[ ] Test endpoints in FastAPI docs
-[ ] Git commit: day-5-api-for-data
+[x] Add GET /metrics/history?service=login&minutes=10
+[x] Return historical metrics as JSON
+[x] Add GET /metrics/summary
+[x] Return current status for all 3 services
+[x] Test endpoints in FastAPI docs
+[x] Git commit: day-5-api-for-data
 
 Day 6 - May 18 - Structure Solid
-[ ] End-to-end test: Watcher -> DB -> History API
-[ ] Create backend/models.py
-[ ] Define Pydantic models for Metric, Alert, ChaosConfig
-[ ] Move existing Pydantic classes into models.py
-[ ] Start README.md
-[ ] Write Architecture section
-[ ] Git commit: day-6-structure-solid
+[x] End-to-end test: Watcher -> DB -> History API
+[x] Create backend/models.py
+[x] Define Pydantic models for Metric, Alert, ChaosConfig
+[x] Move existing Pydantic classes into models.py
+[x] Start README.md
+[x] Write Architecture section
+[x] Git commit: day-6-structure-solid
 
 Day 7 - May 19 - Week 1 Buffer
-[ ] Fix bugs from Days 1-6
-[ ] Ensure fake_services.py can run alone
-[ ] Ensure watcher.py can run alone
-[ ] Ensure both can run together
-[ ] Add docstrings to 3 important functions
-[ ] Verify chaos -> watcher -> DB -> history API flow
-[ ] Git commit: day-7-week-1-done
+[x] Fix bugs from Days 1-6
+[x] Ensure fake_services.py can run alone
+[x] Ensure watcher.py can run alone
+[x] Ensure both can run together
+[x] Add docstrings to 3 important functions
+[x] Verify chaos -> watcher -> DB -> history API flow
+[x] Git commit: day-7-week-1-done
 
 
 WEEK 2 - THE BRAIN: ANOMALY DETECTION
 Goal: The system automatically knows when something is wrong.
 
 Day 8 - May 20 - Baseline Math
-[ ] Create backend/detector.py
-[ ] Add calculate_baseline(service_name, window_minutes=10)
-[ ] Add get_current_status(service_name)
-[ ] Print baselines for all 3 services
-[ ] Git commit: day-8-baseline-math
+[x] Create backend/detector.py
+[x] Add calculate_baseline(service_name, window_minutes=10)
+[x] Add get_current_status(service_name)
+[x] Print baselines for all 3 services
+[x] Git commit: day-8-baseline-math
 
 Day 9 - May 21 - Thresholds Working
-[ ] Add check_latency_anomaly(service)
-[ ] Add check_error_anomaly(service)
-[ ] Add detect_all()
-[ ] Integrate detector into watcher terminal output
-[ ] Test chaos detection within 4-6 seconds
-[ ] Git commit: day-9-thresholds-working
+[x] Add check_latency_anomaly(service)
+[x] Add check_error_anomaly(service)
+[x] Add detect_all()
+[x] Integrate detector into watcher terminal output
+[x] Test chaos detection within 4-6 seconds
+[x] Git commit: day-9-thresholds-working
 
 Day 10 - May 22 - Correlation
-[ ] Add check_cascade_failure()
-[ ] Add classify_scope(anomalies)
-[ ] Add correlation_score to anomaly dict
-[ ] Test breaking 2 services together
-[ ] Git commit: day-10-correlation
+[x] Add check_cascade_failure()
+[x] Add classify_scope(anomalies)
+[x] Add correlation_score to anomaly dict
+[x] Test breaking 2 services together
+[x] Git commit: day-10-correlation
 
 Day 11 - May 23 - Alert Lifecycle
 [ ] Create Alert Pydantic model

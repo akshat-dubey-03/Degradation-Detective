@@ -5,8 +5,10 @@ from typing import Dict, List
 import requests
 
 try:
+    from backend.detector import detect_all
     from backend.database import DB_PATH, init_db, save_metric
 except ImportError:
+    from detector import detect_all
     from database import DB_PATH, init_db, save_metric
 
 
@@ -60,6 +62,31 @@ def format_metric(metric: Dict[str, object]) -> str:
     return f"{service_name:<8} | {status_code!s:<3} | {latency_ms!s:>5}ms | {status_icon}"
 
 
+def format_detection(detection: Dict[str, object]) -> str:
+    anomalies = detection["anomalies"]
+    scope = detection["scope"]
+
+    if not anomalies:
+        return "Anomalies: none"
+
+    lines = [
+        "Anomalies: "
+        f"{scope['scope']} "
+        f"(correlation {scope['correlation_score']})"
+    ]
+
+    for anomaly in anomalies:
+        lines.append(
+            "  - "
+            f"{anomaly['service_name']} "
+            f"{anomaly['anomaly_type']} "
+            f"{anomaly['severity']}: "
+            f"{anomaly['message']}"
+        )
+
+    return "\n".join(lines)
+
+
 def run_watcher() -> None:
     init_db()
     print("Degradation Detective watcher started")
@@ -74,6 +101,7 @@ def run_watcher() -> None:
             save_metric(metric)
             print(format_metric(metric))
 
+        print(format_detection(detect_all()))
         print()
         sleep(POLL_INTERVAL_SECONDS)
 

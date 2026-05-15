@@ -1,10 +1,11 @@
 import sqlite3
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 
 DB_PATH = Path(__file__).resolve().with_name("metrics.db")
+SERVICE_NAMES = ("login", "payment", "search")
 
 
 def get_connection(db_path: Union[Path, str] = DB_PATH) -> sqlite3.Connection:
@@ -122,7 +123,38 @@ def get_recent_metrics(
             (service_name, cutoff),
         ).fetchall()
 
-    return [dict(row) for row in rows]
+    return [_metric_row_to_dict(row) for row in rows]
+
+
+def get_latest_metric(
+    service_name: str,
+    db_path: Union[Path, str] = DB_PATH,
+) -> Optional[Dict[str, Any]]:
+    init_db(db_path)
+
+    with get_connection(db_path) as connection:
+        row = connection.execute(
+            """
+            SELECT
+                id,
+                service_name,
+                endpoint,
+                status_code,
+                latency_ms,
+                timestamp,
+                is_error
+            FROM metrics
+            WHERE service_name = ?
+            ORDER BY timestamp DESC, id DESC
+            LIMIT 1
+            """,
+            (service_name,),
+        ).fetchone()
+
+    if row is None:
+        return None
+
+    return _metric_row_to_dict(row)
 
 
 def get_average_latency(
@@ -177,6 +209,74 @@ def get_error_rate(
         return 0.0
 
     return (error_count / total_count) * 100
+
+
+def get_metric_count(
+    service_name: str,
+    minutes: int,
+    db_path: Union[Path, str] = DB_PATH,
+) -> int:
+    cutoff = (datetime.now() - timedelta(minutes=minutes)).isoformat(timespec="seconds")
+
+    init_db(db_path)
+
+    with get_connection(db_path) as connection:
+        count = connection.execute(
+            """
+            SELECT COUNT(*)
+            FROM metrics
+            WHERE service_name = ?
+            AND timestamp >= ?
+            """,
+            (service_name, cutoff),
+        ).fetchone()[0]
+
+    return int(count or 0)
+
+
+def get_service_summary(
+    service_name: str,
+    minutes: int = 10,
+    db_path: Union[Path, str] = DB_PATH,
+) -> Dict[str, Any]:
+    average_latency = get_average_latency(service_name, minutes, db_path)
+    error_rate = get_error_rate(service_name, minutes, db_path)
+    request_count = get_metric_count(service_name, minutes, db_path)
+    latest_metric = get_latest_metric(service_name, db_path)
+
+    if latest_metric is None:
+        status = "unknown"
+    elif latest_metric["is_error"] or error_rate >= 25:
+        status = "degraded"
+    elif average_latency >= 1000:
+        status = "slow"
+    else:
+        status = "healthy"
+
+    return {
+        "service_name": service_name,
+        "status": status,
+        "average_latency_ms": round(average_latency, 2),
+        "error_rate_percent": round(error_rate, 2),
+        "request_count": request_count,
+        "latest_metric": latest_metric,
+    }
+
+
+def get_service_summaries(
+    minutes: int = 10,
+    db_path: Union[Path, str] = DB_PATH,
+) -> Dict[str, Dict[str, Any]]:
+    return {
+        service_name: get_service_summary(service_name, minutes, db_path)
+        for service_name in SERVICE_NAMES
+    }
+
+
+def _metric_row_to_dict(row: sqlite3.Row) -> Dict[str, Any]:
+    metric = dict(row)
+    metric["is_error"] = bool(metric["is_error"])
+    return metric
 
 
 if __name__ == "__main__":

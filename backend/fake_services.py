@@ -1,26 +1,31 @@
 from random import random, uniform
 from time import sleep
-from typing import Dict, Literal
+from typing import Dict
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
 
-
-ServiceName = Literal["login", "payment", "search"]
-ChaosMode = Literal["healthy", "slow", "errors", "both"]
-
-
-class ChaosRequest(BaseModel):
-    service: ServiceName
-    mode: ChaosMode = Field(
-        description="healthy = normal, slow = high latency, errors = failures, both = slow plus failures"
+try:
+    from backend.database import get_recent_metrics, get_service_summaries
+    from backend.models import (
+        ChaosMode,
+        ChaosRequest,
+        Metric,
+        MetricsHistory,
+        MetricsSummary,
+        ServiceName,
+        ServiceResponse,
     )
-
-
-class ServiceResponse(BaseModel):
-    service: ServiceName
-    status: str
-    latency_hint_ms: int
+except ImportError:
+    from database import get_recent_metrics, get_service_summaries
+    from models import (
+        ChaosMode,
+        ChaosRequest,
+        Metric,
+        MetricsHistory,
+        MetricsSummary,
+        ServiceName,
+        ServiceResponse,
+    )
 
 
 app = FastAPI(
@@ -104,3 +109,22 @@ def reset_chaos() -> dict:
 @app.get("/admin/status")
 def chaos_status() -> dict:
     return {"chaos_state": CHAOS_STATE}
+
+
+@app.get("/metrics/history", response_model=MetricsHistory)
+def metrics_history(service: ServiceName, minutes: int = 10) -> MetricsHistory:
+    metrics = [Metric(**row) for row in get_recent_metrics(service, minutes)]
+    return MetricsHistory(
+        service=service,
+        minutes=minutes,
+        count=len(metrics),
+        metrics=metrics,
+    )
+
+
+@app.get("/metrics/summary", response_model=MetricsSummary)
+def metrics_summary(minutes: int = 10) -> MetricsSummary:
+    return MetricsSummary(
+        window_minutes=minutes,
+        services=get_service_summaries(minutes),
+    )
