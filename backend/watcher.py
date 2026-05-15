@@ -4,6 +4,11 @@ from typing import Dict, List
 
 import requests
 
+try:
+    from backend.database import DB_PATH, init_db, save_metric
+except ImportError:
+    from database import DB_PATH, init_db, save_metric
+
 
 BASE_URL = "http://127.0.0.1:8000"
 POLL_INTERVAL_SECONDS = 2
@@ -56,14 +61,17 @@ def format_metric(metric: Dict[str, object]) -> str:
 
 
 def run_watcher() -> None:
+    init_db()
     print("Degradation Detective watcher started")
     print(f"Polling {BASE_URL} every {POLL_INTERVAL_SECONDS}s. Press Ctrl+C to stop.\n")
+    print(f"Saving metrics to {DB_PATH}\n")
 
     while True:
         print(f"[{datetime.now().strftime('%H:%M:%S')}]")
 
         for service in SERVICES:
             metric = ping_service(service)
+            save_metric(metric)
             print(format_metric(metric))
 
         print()

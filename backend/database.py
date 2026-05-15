@@ -1,6 +1,7 @@
 import sqlite3
+from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, Union
+from typing import Any, Dict, List, Union
 
 
 DB_PATH = Path(__file__).resolve().with_name("metrics.db")
@@ -91,6 +92,91 @@ def save_metric(
             ),
         )
         return int(cursor.lastrowid)
+
+
+def get_recent_metrics(
+    service_name: str,
+    minutes: int,
+    db_path: Union[Path, str] = DB_PATH,
+) -> List[Dict[str, Any]]:
+    cutoff = (datetime.now() - timedelta(minutes=minutes)).isoformat(timespec="seconds")
+
+    init_db(db_path)
+
+    with get_connection(db_path) as connection:
+        rows = connection.execute(
+            """
+            SELECT
+                id,
+                service_name,
+                endpoint,
+                status_code,
+                latency_ms,
+                timestamp,
+                is_error
+            FROM metrics
+            WHERE service_name = ?
+            AND timestamp >= ?
+            ORDER BY timestamp ASC, id ASC
+            """,
+            (service_name, cutoff),
+        ).fetchall()
+
+    return [dict(row) for row in rows]
+
+
+def get_average_latency(
+    service_name: str,
+    minutes: int,
+    db_path: Union[Path, str] = DB_PATH,
+) -> float:
+    cutoff = (datetime.now() - timedelta(minutes=minutes)).isoformat(timespec="seconds")
+
+    init_db(db_path)
+
+    with get_connection(db_path) as connection:
+        average_latency = connection.execute(
+            """
+            SELECT AVG(latency_ms)
+            FROM metrics
+            WHERE service_name = ?
+            AND timestamp >= ?
+            """,
+            (service_name, cutoff),
+        ).fetchone()[0]
+
+    return float(average_latency or 0.0)
+
+
+def get_error_rate(
+    service_name: str,
+    minutes: int,
+    db_path: Union[Path, str] = DB_PATH,
+) -> float:
+    cutoff = (datetime.now() - timedelta(minutes=minutes)).isoformat(timespec="seconds")
+
+    init_db(db_path)
+
+    with get_connection(db_path) as connection:
+        row = connection.execute(
+            """
+            SELECT
+                COUNT(*) AS total_count,
+                SUM(is_error) AS error_count
+            FROM metrics
+            WHERE service_name = ?
+            AND timestamp >= ?
+            """,
+            (service_name, cutoff),
+        ).fetchone()
+
+    total_count = int(row["total_count"] or 0)
+    error_count = int(row["error_count"] or 0)
+
+    if total_count == 0:
+        return 0.0
+
+    return (error_count / total_count) * 100
 
 
 if __name__ == "__main__":
