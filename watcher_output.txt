@@ -1,0 +1,79 @@
+Degradation Detective watcher started
+Polling http://127.0.0.1:8000 every 2s. Press Ctrl+C to stop.
+
+Saving metrics to /Users/akshatdubey/Desktop/degradation-detective/backend/metrics.db
+
+[21:54:07]
+LOGIN    | 200 |    92ms | OK
+PAYMENT  | 200 |   114ms | OK
+SEARCH   | 200 |    92ms | OK
+Anomalies: cascade (correlation 1.0)
+  - login errors critical: login is returning errors (52.38% in the recent window)
+  - payment errors critical: payment is returning errors (76.19% in the recent window)
+  - search errors critical: search is returning errors (76.19% in the recent window)
+
+[21:54:10]
+LOGIN    | 200 |   120ms | OK
+PAYMENT  | 200 |   354ms | OK
+SEARCH   | 200 |   117ms | OK
+Anomalies: cascade (correlation 1.0)
+  - login errors critical: login is returning errors (50.0% in the recent window)
+  - payment errors critical: payment is returning errors (72.73% in the recent window)
+  - search errors critical: search is returning errors (72.73% in the recent window)
+
+[21:54:12]
+LOGIN    | 200 |    62ms | OK
+PAYMENT  | 200 |   116ms | OK
+SEARCH   | 200 |    87ms | OK
+Anomalies: cascade (correlation 0.67)
+  - payment errors critical: payment is returning errors (69.57% in the recent window)
+  - search errors critical: search is returning errors (69.57% in the recent window)
+
+[21:54:15]
+LOGIN    | 200 |    77ms | OK
+PAYMENT  | 503 |   127ms | X
+SEARCH   | 503 |    84ms | X
+Anomalies: cascade (correlation 0.67)
+  - payment errors critical: payment is returning errors (70.83% in the recent window)
+  - search errors critical: search is returning errors (70.83% in the recent window)
+
+[21:54:17]
+LOGIN    | 200 |    82ms | OK
+PAYMENT  | 503 |   116ms | X
+SEARCH   | 503 |    98ms | X
+Anomalies: cascade (correlation 0.67)
+  - payment errors critical: payment is returning errors (72.0% in the recent window)
+  - search errors critical: search is returning errors (72.0% in the recent window)
+
+[21:54:19]
+LOGIN    | 200 |    72ms | OK
+PAYMENT  | 200 |   110ms | OK
+SEARCH   | 503 |    77ms | X
+Anomalies: cascade (correlation 0.67)
+  - payment errors critical: payment is returning errors (69.23% in the recent window)
+  - search errors critical: search is returning errors (73.08% in the recent window)
+
+[21:54:22]
+LOGIN    | 200 |    77ms | OK
+PAYMENT  | 200 |   121ms | OK
+SEARCH   | 503 |    95ms | X
+Anomalies: cascade (correlation 0.67)
+  - payment errors critical: payment is returning errors (66.67% in the recent window)
+  - search errors critical: search is returning errors (74.07% in the recent window)
+
+[21:54:24]
+LOGIN    | 200 |    82ms | OK
+PAYMENT  | 503 |   107ms | X
+SEARCH   | 503 |    83ms | X
+Anomalies: cascade (correlation 0.67)
+  - payment errors critical: payment is returning errors (67.86% in the recent window)
+  - search errors critical: search is returning errors (75.0% in the recent window)
+
+[21:54:26]
+LOGIN    | 200 |    89ms | OK
+PAYMENT  | 503 |    93ms | X
+SEARCH   | 503 |    69ms | X
+Anomalies: cascade (correlation 0.67)
+  - payment errors critical: payment is returning errors (68.97% in the recent window)
+  - search errors critical: search is returning errors (75.86% in the recent window)
+

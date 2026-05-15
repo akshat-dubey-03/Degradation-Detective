@@ -59,3 +59,25 @@ Optional voice output is available for local experiments by installing `pyttsx3`
 - `GET /alerts/active`
 - `GET /alerts/history?limit=50`
 - `GET /narrations/recent?limit=20`
+
+## Tech Stack
+- **Backend**: FastAPI, SQLite, Pydantic, Python
+- **Frontend**: React, Vite, Chart.js, Lucide Icons, Vanilla CSS
+- **AI Integration**: OpenRouter API (GPT-4o-mini)
+- **Monitoring Architecture**: 2-second polling watcher, 10-minute rolling baseline anomaly detection.
+
+## Frontend Commands
+
+From the `frontend` directory:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Open `http://localhost:5173` to see the live dashboard!
+
+## Deployment Links
+- [Demo Video](#) (Coming Soon)
+- [Deployed Frontend](#) (Vercel Placeholder)
+- [Deployed Backend](#) (Render Placeholder)

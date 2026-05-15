@@ -3,7 +3,7 @@ from time import sleep
 from typing import Dict, List
 
 from fastapi import FastAPI, HTTPException
-
+from fastapi.middleware.cors import CORSMiddleware
 try:
     from backend.database import (
         get_active_alerts,
@@ -47,6 +47,14 @@ except ImportError:
 app = FastAPI(
     title="Degradation Detective Fake Services",
     description="Three simulated APIs plus chaos controls for observability demos.",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 CHAOS_STATE: Dict[str, ChaosMode] = {

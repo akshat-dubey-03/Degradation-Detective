@@ -149,6 +149,11 @@ def narrate_alert(alert: Dict[str, Any]) -> Dict[str, Any]:
     narration_id = save_narration(narration)
     mark_alert_narrated(int(alert["id"]))
     narration["id"] = narration_id
+
+    # Call TTS in a background thread so it doesn't block the watcher loop
+    import threading
+    threading.Thread(target=speak_narration, args=(narration["summary"],), daemon=True).start()
+
     return narration
 
 
