@@ -2,6 +2,8 @@
 
 Real-time API health monitor with anomaly detection and AI narration. Built as a 34-day observability project.
 
+![Degradation Detective Dashboard](dashboard_demo.png)
+
 ## Architecture
 
 Degradation Detective starts with three fake services: `login`, `payment`, and `search`. They run in FastAPI and can be switched into healthy, slow, error, or combined chaos modes.
