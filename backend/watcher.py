@@ -5,11 +5,13 @@ from typing import Dict, List
 import requests
 
 try:
-    from backend.detector import detect_all
-    from backend.database import DB_PATH, init_db, save_metric
+    from backend.detector import detect_all, sync_alerts_from_detection
+    from backend.database import DB_PATH, get_active_alerts, init_db, save_metric
+    from backend.narrator import narrator_loop_once
 except ImportError:
-    from detector import detect_all
-    from database import DB_PATH, init_db, save_metric
+    from detector import detect_all, sync_alerts_from_detection
+    from database import DB_PATH, get_active_alerts, init_db, save_metric
+    from narrator import narrator_loop_once
 
 
 BASE_URL = "http://127.0.0.1:8000"
@@ -87,6 +89,23 @@ def format_detection(detection: Dict[str, object]) -> str:
     return "\n".join(lines)
 
 
+def format_active_alerts() -> str:
+    alerts = get_active_alerts()
+
+    if not alerts:
+        return "Active alerts: none"
+
+    lines = [f"Active alerts: {len(alerts)}"]
+    for alert in alerts:
+        lines.append(
+            "  - "
+            f"#{alert['id']} {alert['service_name']} "
+            f"{alert['alert_type']} {alert['severity']} "
+            f"(seen {alert['occurrence_count']}x, narrated={alert['narrated']})"
+        )
+    return "\n".join(lines)
+
+
 def run_watcher() -> None:
     init_db()
     print("Degradation Detective watcher started")
@@ -101,7 +120,14 @@ def run_watcher() -> None:
             save_metric(metric)
             print(format_metric(metric))
 
-        print(format_detection(detect_all()))
+        detection = detect_all()
+        sync_alerts_from_detection(detection)
+        new_narrations = narrator_loop_once()
+
+        print(format_detection(detection))
+        print(format_active_alerts())
+        if new_narrations:
+            print(f"Narrations created: {len(new_narrations)}")
         print()
         sleep(POLL_INTERVAL_SECONDS)
 

@@ -1,4 +1,4 @@
-from typing import Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -64,6 +64,11 @@ class Alert(BaseModel):
     timestamp: str
     resolved: bool = False
     resolved_at: Optional[str] = None
+    correlation_score: float = 0.0
+    scope: str = "single_service"
+    narrated: bool = False
+    last_seen_at: Optional[str] = None
+    occurrence_count: int = 1
 
 
 class Anomaly(BaseModel):
@@ -74,3 +79,29 @@ class Anomaly(BaseModel):
     current_value: float
     baseline_value: float
     correlation_score: float = 0.0
+
+
+class NarrationResult(BaseModel):
+    alert_id: Optional[int] = None
+    service_name: ServiceName
+    severity: str
+    summary: str
+    root_cause: str
+    next_action: str
+    confidence: float = 0.0
+    source: str = "fallback"
+    details: Dict[str, Any] = {}
+
+
+class Narration(BaseModel):
+    id: Optional[int] = None
+    alert_id: int
+    service_name: ServiceName
+    severity: str
+    summary: str
+    root_cause: str
+    next_action: str
+    confidence: float
+    timestamp: str
+    source: str
+    details: Dict[str, Any] = {}

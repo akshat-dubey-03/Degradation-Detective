@@ -2,8 +2,8 @@ DEGRADATION DETECTIVE - DAILY TASK TRACKER
 
 Deadline: June 15, 2026
 Daily capacity: 2 hours/day
-Current status: Day 10 of 34 completed
-Next task: Day 11 - Alert Lifecycle
+Current status: Day 21 of 34 completed
+Next task: Day 22 - UI Scaffold
 
 How to use this file:
 - Change [ ] to [x] when a task is completed.
@@ -114,94 +114,94 @@ Day 10 - May 22 - Correlation
 [x] Git commit: day-10-correlation
 
 Day 11 - May 23 - Alert Lifecycle
-[ ] Create Alert Pydantic model
-[ ] Add create_alert(anomaly_dict)
-[ ] Add get_active_alerts()
-[ ] Add resolve_alert(service_name)
-[ ] Add resolved_at timestamp column
-[ ] Test break -> alert created, fix -> alert resolved
-[ ] Git commit: day-11-alert-lifecycle
+[x] Create Alert Pydantic model
+[x] Add create_alert(anomaly_dict)
+[x] Add get_active_alerts()
+[x] Add resolve_alert(service_name)
+[x] Add resolved_at timestamp column
+[x] Test break -> alert created, fix -> alert resolved
+[x] Git commit: day-11-alert-lifecycle
 
 Day 12 - May 24 - Severity Patterns
-[ ] Add severity logic
-[ ] Add degrading pattern detection
-[ ] Add GET /alerts/active
-[ ] Add GET /alerts/history?limit=50
-[ ] Test healthy, slow, errors, both
-[ ] Git commit: day-12-severity-patterns
+[x] Add severity logic
+[x] Add degrading pattern detection
+[x] Add GET /alerts/active
+[x] Add GET /alerts/history?limit=50
+[x] Test healthy, slow, errors, both
+[x] Git commit: day-12-severity-patterns
 
 Day 13 - May 25 - Auto Alerts Live
-[ ] Fully integrate detector into watcher.py
-[ ] Add alert deduplication
-[ ] Add 30-second cooldown
-[ ] Print active alert summary every poll cycle
-[ ] Git commit: day-13-auto-alerts-live
+[x] Fully integrate detector into watcher.py
+[x] Add alert deduplication
+[x] Add 30-second cooldown
+[x] Print active alert summary every poll cycle
+[x] Git commit: day-13-auto-alerts-live
 
 Day 14 - May 26 - Week 2 Buffer
-[ ] Tune thresholds
-[ ] Handle connection refused / timeout
-[ ] Refactor detector.py if needed
-[ ] Update README with Week 2 architecture
-[ ] Git commit: day-14-week-2-done
+[x] Tune thresholds
+[x] Handle connection refused / timeout
+[x] Refactor detector.py if needed
+[x] Update README with Week 2 architecture
+[x] Git commit: day-14-week-2-done
 
 
 WEEK 3 - THE AI NARRATOR
 Goal: The system explains incidents like an SRE.
 
 Day 15 - May 27 - LLM Connected
-[ ] Create backend/narrator.py
-[ ] Add call_openrouter(prompt)
-[ ] Use OpenRouter chat completions API
-[ ] Test basic SRE hello prompt
-[ ] Handle timeout, rate limit, bad key
-[ ] Git commit: day-15-llm-connected
+[x] Create backend/narrator.py
+[x] Add call_openrouter(prompt)
+[x] Use OpenRouter chat completions API
+[x] Test basic SRE hello prompt
+[x] Handle timeout, rate limit, bad key
+[x] Git commit: day-15-llm-connected
 
 Day 16 - May 28 - Prompt V1
-[ ] Create backend/prompts.py or prompts folder
-[ ] Add build_narration_prompt(metrics_list, alert_list)
-[ ] Test with fake data
-[ ] Iterate prompt 3 times
-[ ] Git commit: day-16-prompt-v1
+[x] Create backend/prompts.py or prompts folder
+[x] Add build_narration_prompt(metrics_list, alert_list)
+[x] Test with fake data
+[x] Iterate prompt 3 times
+[x] Git commit: day-16-prompt-v1
 
 Day 17 - May 29 - SRE Voice
-[ ] Rewrite prompt for casual thinking-out-loud voice
-[ ] Add exact-number constraints
-[ ] Test latency spike scenario
-[ ] Test error burst scenario
-[ ] Test cascade failure scenario
-[ ] Save final prompt as prompts/sre_v1.txt
-[ ] Git commit: day-17-sre-voice
+[x] Rewrite prompt for casual thinking-out-loud voice
+[x] Add exact-number constraints
+[x] Test latency spike scenario
+[x] Test error burst scenario
+[x] Test cascade failure scenario
+[x] Save final prompt as prompts/sre_v1.txt
+[x] Git commit: day-17-sre-voice
 
 Day 18 - May 30 - Structured Output
-[ ] Require JSON-only output
-[ ] Add parse_llm_json(response_text)
-[ ] Add NarrationResult Pydantic model
-[ ] Test 5 scenarios
-[ ] Add fallback JSON if LLM fails
-[ ] Git commit: day-18-structured-output
+[x] Require JSON-only output
+[x] Add parse_llm_json(response_text)
+[x] Add NarrationResult Pydantic model
+[x] Test 5 scenarios
+[x] Add fallback JSON if LLM fails
+[x] Git commit: day-18-structured-output
 
 Day 19 - May 31 - Narrator Loop
-[ ] Create narrations table
-[ ] Add narrator loop
-[ ] Find unresolved alerts without narrations
-[ ] Send alert and recent metrics to LLM
-[ ] Save narration to DB
-[ ] Mark alert as narrated
-[ ] Git commit: day-19-narrator-loop
+[x] Create narrations table
+[x] Add narrator loop
+[x] Find unresolved alerts without narrations
+[x] Send alert and recent metrics to LLM
+[x] Save narration to DB
+[x] Mark alert as narrated
+[x] Git commit: day-19-narrator-loop
 
 Day 20 - June 1 - Voice Added
-[ ] Add optional voice/text-to-speech layer
-[ ] Prefer browser speechSynthesis later, or pyttsx3 now
-[ ] Test narration spoken aloud if using TTS
-[ ] Skip if TTS takes too long
-[ ] Git commit: day-20-voice-added
+[x] Add optional voice/text-to-speech layer
+[x] Prefer browser speechSynthesis later, or pyttsx3 now
+[x] Test narration spoken aloud if using TTS
+[x] Skip if TTS takes too long
+[x] Git commit: day-20-voice-added
 
 Day 21 - June 2 - Week 3 Buffer
-[ ] Add GET /narrations/recent?limit=20
-[ ] Add fallback narration templates
-[ ] Refactor narrator functions
-[ ] Full pipeline test: Chaos -> Detection -> Alert -> Narration -> DB -> API
-[ ] Git commit: day-21-week-3-done
+[x] Add GET /narrations/recent?limit=20
+[x] Add fallback narration templates
+[x] Refactor narrator functions
+[x] Full pipeline test: Chaos -> Detection -> Alert -> Narration -> DB -> API
+[x] Git commit: day-21-week-3-done
 
 
 WEEK 4 - THE DASHBOARD

@@ -1,28 +1,44 @@
 from random import random, uniform
 from time import sleep
-from typing import Dict
+from typing import Dict, List
 
 from fastapi import FastAPI, HTTPException
 
 try:
-    from backend.database import get_recent_metrics, get_service_summaries
+    from backend.database import (
+        get_active_alerts,
+        get_alert_history,
+        get_recent_metrics,
+        get_recent_narrations,
+        get_service_summaries,
+    )
     from backend.models import (
+        Alert,
         ChaosMode,
         ChaosRequest,
         Metric,
         MetricsHistory,
         MetricsSummary,
+        Narration,
         ServiceName,
         ServiceResponse,
     )
 except ImportError:
-    from database import get_recent_metrics, get_service_summaries
+    from database import (
+        get_active_alerts,
+        get_alert_history,
+        get_recent_metrics,
+        get_recent_narrations,
+        get_service_summaries,
+    )
     from models import (
+        Alert,
         ChaosMode,
         ChaosRequest,
         Metric,
         MetricsHistory,
         MetricsSummary,
+        Narration,
         ServiceName,
         ServiceResponse,
     )
@@ -128,3 +144,18 @@ def metrics_summary(minutes: int = 10) -> MetricsSummary:
         window_minutes=minutes,
         services=get_service_summaries(minutes),
     )
+
+
+@app.get("/alerts/active", response_model=List[Alert])
+def active_alerts() -> List[Alert]:
+    return [Alert(**alert) for alert in get_active_alerts()]
+
+
+@app.get("/alerts/history", response_model=List[Alert])
+def alert_history(limit: int = 50) -> List[Alert]:
+    return [Alert(**alert) for alert in get_alert_history(limit=limit)]
+
+
+@app.get("/narrations/recent", response_model=List[Narration])
+def narrations_recent(limit: int = 20) -> List[Narration]:
+    return [Narration(**narration) for narration in get_recent_narrations(limit=limit)]
